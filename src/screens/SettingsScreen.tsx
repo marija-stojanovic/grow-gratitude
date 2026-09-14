@@ -1,8 +1,9 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Badge, Card, Copy, Screen } from '../components/UI';
-import { ThemePreference, useTheme } from '../theme/ThemeProvider';
+import { useTheme } from '../theme/ThemeProvider';
 import { radius, spacing } from '../theme/tokens';
+import { ThemePreference } from '../types';
 import { version } from '../../package.json';
 
 const options: {

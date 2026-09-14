@@ -1,17 +1,63 @@
-export const gratitudeThemes = [
+import { BuiltInThemeKey } from '../types';
+
+export interface BuiltInThemeDefinition {
+  key: BuiltInThemeKey;
+  name: string;
+  description: string;
+  plantTypeId: string;
+  isAutomatic: boolean;
+}
+
+export const gratitudeThemes: BuiltInThemeDefinition[] = [
   {
+    key: 'daily-gratitude',
     name: 'Dnevna biljka zahvalnosti',
     description: 'Male stvari koje uljepšaju dan.',
+    plantTypeId: 'sunflower',
+    isAutomatic: true,
   },
-  { name: 'Porodica', description: 'Bliskost, podrška i zajednički trenuci.' },
-  { name: 'Zdravlje', description: 'Briga o sebi i svom tijelu.' },
-  { name: 'Fakultet', description: 'Nove lekcije i mali uspjesi.' },
   {
+    key: 'family',
+    name: 'Porodica',
+    description: 'Bliskost, podrška i zajednički trenuci.',
+    plantTypeId: 'family-plant-pending',
+    isAutomatic: false,
+  },
+  {
+    key: 'health',
+    name: 'Zdravlje',
+    description: 'Briga o sebi i svom tijelu.',
+    plantTypeId: 'health-plant-pending',
+    isAutomatic: false,
+  },
+  {
+    key: 'university',
+    name: 'Fakultet',
+    description: 'Nove lekcije i mali uspjesi.',
+    plantTypeId: 'university-plant-pending',
+    isAutomatic: false,
+  },
+  {
+    key: 'friendship',
     name: 'Prijateljstvo',
     description: 'Ljudi s kojima dijeliš svakodnevicu.',
+    plantTypeId: 'friendship-plant-pending',
+    isAutomatic: false,
   },
-  { name: 'Ljubav', description: 'Pažnja, nježnost i povezanost.' },
-  { name: 'Lični razvoj', description: 'Koraci kojima rasteš i ti.' },
+  {
+    key: 'love',
+    name: 'Ljubav',
+    description: 'Pažnja, nježnost i povezanost.',
+    plantTypeId: 'love-plant-pending',
+    isAutomatic: false,
+  },
+  {
+    key: 'personal-growth',
+    name: 'Lični razvoj',
+    description: 'Koraci kojima rasteš i ti.',
+    plantTypeId: 'personal-growth-plant-pending',
+    isAutomatic: false,
+  },
 ];
 export const growthStages = [
   { days: '0', label: 'Sjeme' },

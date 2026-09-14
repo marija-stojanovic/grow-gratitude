@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useState } from 'react';
 import { useColorScheme } from 'react-native';
+import { ThemePreference } from '../types/settings';
 import { Colors, palettes } from './tokens';
 
-export type ThemePreference = 'system' | 'light' | 'dark';
 type ThemeContextValue = {
   colors: Colors;
   isDark: boolean;
