@@ -10,6 +10,11 @@ import App from '../App';
 // pokretanje baze. Prava SQLite veza provjerava se na emulatoru.
 jest.mock('../src/database/connection', () => ({
   initializeDatabase: jest.fn().mockResolvedValue(undefined),
+  getDatabase: jest.fn(() => ({
+    executeAsync: jest.fn().mockResolvedValue({
+      rows: { _array: [], length: 0, item: () => undefined },
+    }),
+  })),
 }));
 
 test('renders correctly', async () => {

@@ -8,15 +8,15 @@ Inicijalizacija koristi jednu Promise vrijednost. Ako je dvije komponente zatra�
 
 ## Tabele
 
-| Tabela | Svrha | Najvažnija ograničenja |
-| --- | --- | --- |
-| `themes` | Trajni sektori bašte | Jedinstven ugrađeni ključ, provjera porijekla i boolean vrijednosti. |
-| `plants` | Jedna biljka/jedan ciklus | Veza s temom, jedinstven broj ciklusa u temi, niz 0–21. |
-| `gratitude_entries` | Nepromjenjive zahvalnosti | Veza s biljkom i temom, tekst 1–300, jedan zapis po biljci i datumu. |
-| `mood_entries` | Jedno dnevno raspoloženje | Vrijednost 1–5 i jedinstven datum. |
-| `challenges` | Ugrađeni i korisnički izazovi | Naslov 1–100, naslov jedinstven bez obzira na velika/mala slova. |
-| `challenge_completions` | Evidencija završenih izazova | Jedan isti izazov najviše jednom po datumu. |
-| `app_settings` | Jedan red postavki | Dozvoljen samo red `id = 1`, provjera teme, vremena i boolean vrijednosti. |
+| Tabela                  | Svrha                         | Najvažnija ograničenja                                                     |
+| ----------------------- | ----------------------------- | -------------------------------------------------------------------------- |
+| `themes`                | Trajni sektori bašte          | Jedinstven ugrađeni ključ, provjera porijekla i boolean vrijednosti.       |
+| `plants`                | Jedna biljka/jedan ciklus     | Veza s temom, jedinstven broj ciklusa u temi, niz 0–21.                    |
+| `gratitude_entries`     | Nepromjenjive zahvalnosti     | Veza s biljkom i temom, tekst 1–300, jedan zapis po biljci i datumu.       |
+| `mood_entries`          | Jedno dnevno raspoloženje     | Vrijednost 1–5 i jedinstven datum.                                         |
+| `challenges`            | Ugrađeni i korisnički izazovi | Naslov 1–100, naslov jedinstven bez obzira na velika/mala slova.           |
+| `challenge_completions` | Evidencija završenih izazova  | Jedan isti izazov najviše jednom po datumu.                                |
+| `app_settings`          | Jedan red postavki            | Dozvoljen samo red `id = 1`, provjera teme, vremena i boolean vrijednosti. |
 
 ## Ograničenja iz pravila aplikacije
 
@@ -30,7 +30,7 @@ Parcijalni jedinstveni indeks `one_active_plant_per_theme` dozvoljava samo jednu
 
 Strani ključevi se uključuju pri svakom otvaranju veze naredbom `PRAGMA foreign_keys = ON`. WAL režim se uključuje sa `PRAGMA journal_mode = WAL`.
 
-Indeksi za datume i teme ubrzavaju buduću Historiju, Statistiku i prikaz sektora bez učitavanja cijele baze.
+Indeksi za datume i teme ubrzavaju buduću Istoriju, Statistiku i prikaz sektora bez učitavanja cijele baze.
 
 ## Početni podaci
 

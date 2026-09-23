@@ -2,6 +2,14 @@ import { LocalDate } from '../types';
 
 const LOCAL_DATE_PATTERN = /^(\d{4})-(\d{2})-(\d{2})$/;
 
+/** Datum prema kalendaru telefona, bez UTC pomjeranja preko ponoći. */
+export function localDateFor(date: Date): LocalDate {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 export function isLocalDate(value: string): value is LocalDate {
   const match = LOCAL_DATE_PATTERN.exec(value);
   if (!match) {

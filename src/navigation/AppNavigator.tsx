@@ -15,14 +15,22 @@ import { GardenScreen } from '../screens/GardenScreen';
 import { HistoryScreen } from '../screens/HistoryScreen';
 import { StatisticsScreen } from '../screens/StatisticsScreen';
 import { SettingsScreen } from '../screens/SettingsScreen';
+import { SpinWheelScreen } from '../screens/SpinWheelScreen';
 import { useTheme } from '../theme/ThemeProvider';
 import { spacing, typography } from '../theme/tokens';
 
-type Tab = 'today' | 'garden' | 'history' | 'statistics' | 'settings';
+type Tab =
+  | 'today'
+  | 'garden'
+  | 'spin-wheel'
+  | 'history'
+  | 'statistics'
+  | 'settings';
 const tabs: { id: Tab; label: string; symbol: string }[] = [
   { id: 'today', label: 'Danas', symbol: '☀' },
   { id: 'garden', label: 'Bašta', symbol: '♧' },
-  { id: 'history', label: 'Historija', symbol: '≡' },
+  { id: 'spin-wheel', label: 'Izazovi', symbol: '✦' },
+  { id: 'history', label: 'Istorija', symbol: '≡' },
   { id: 'statistics', label: 'Statistika', symbol: '▥' },
   { id: 'settings', label: 'Postavke', symbol: '⚙' },
 ];
@@ -67,6 +75,9 @@ export function AppNavigator() {
     case 'history':
       screen = <HistoryScreen />;
       break;
+    case 'spin-wheel':
+      screen = <SpinWheelScreen />;
+      break;
     case 'statistics':
       screen = <StatisticsScreen />;
       break;
@@ -74,7 +85,12 @@ export function AppNavigator() {
       screen = <SettingsScreen />;
       break;
     default:
-      screen = <TodayScreen onOpenGarden={() => setActiveTab('garden')} />;
+      screen = (
+        <TodayScreen
+          onOpenGarden={() => setActiveTab('garden')}
+          onOpenSpinWheel={() => setActiveTab('spin-wheel')}
+        />
+      );
   }
   return (
     <SafeAreaView style={[styles.root, { backgroundColor: colors.background }]}>

@@ -86,18 +86,25 @@ export function Card({
 export function Button({
   label,
   onPress,
+  disabled = false,
 }: {
   label: string;
   onPress: () => void;
+  disabled?: boolean;
 }) {
   const { colors } = useTheme();
   return (
     <Pressable
       accessibilityRole="button"
+      accessibilityState={{ disabled }}
+      disabled={disabled}
       onPress={onPress}
       style={({ pressed }) => [
         styles.button,
-        { backgroundColor: colors.primary, opacity: pressed ? 0.75 : 1 },
+        {
+          backgroundColor: colors.primary,
+          opacity: disabled ? 0.5 : pressed ? 0.75 : 1,
+        },
       ]}
     >
       <Text style={[styles.buttonText, { color: colors.onPrimary }]}>

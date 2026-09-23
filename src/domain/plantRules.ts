@@ -1,4 +1,9 @@
-import { LocalDate, Plant, PlantGrowthStage, PlantLifecycleStatus } from '../types';
+import {
+  LocalDate,
+  Plant,
+  PlantGrowthStage,
+  PlantLifecycleStatus,
+} from '../types';
 import { calendarDaysBetween } from './dateRules';
 
 export const DAYS_TO_COMPLETE_PLANT = 21;
@@ -6,6 +11,8 @@ export const DAYS_TO_COMPLETE_PLANT = 21;
 export interface PlantViewState {
   status: PlantLifecycleStatus;
   stage: PlantGrowthStage;
+  /** Posljednja zdrava faza; potrebna za odgovarajuću uvenulu sliku. */
+  witheredFromStage: PlantGrowthStage | null;
   streak: number;
   canWaterToday: boolean;
 }
@@ -39,6 +46,7 @@ export function plantViewState(plant: Plant, today: LocalDate): PlantViewState {
     return {
       status: 'completed',
       stage: 'fully-grown',
+      witheredFromStage: null,
       streak: DAYS_TO_COMPLETE_PLANT,
       canWaterToday: false,
     };
@@ -47,6 +55,7 @@ export function plantViewState(plant: Plant, today: LocalDate): PlantViewState {
     return {
       status: 'growing',
       stage: 'seed',
+      witheredFromStage: null,
       streak: 0,
       canWaterToday: true,
     };
@@ -56,6 +65,7 @@ export function plantViewState(plant: Plant, today: LocalDate): PlantViewState {
     return {
       status: 'withered',
       stage: 'withered',
+      witheredFromStage: growthStageFor(plant.currentStreak),
       streak: 0,
       canWaterToday: true,
     };
@@ -63,13 +73,17 @@ export function plantViewState(plant: Plant, today: LocalDate): PlantViewState {
   return {
     status: plant.status,
     stage: growthStageFor(plant.currentStreak),
+    witheredFromStage: null,
     streak: plant.currentStreak,
     canWaterToday: gap === 1,
   };
 }
 
 /** Odlučuje rezultat zalivanja. Baza će odluku i zahvalnost sačuvati zajedno. */
-export function decideWatering(plant: Plant, entryDate: LocalDate): WateringDecision {
+export function decideWatering(
+  plant: Plant,
+  entryDate: LocalDate,
+): WateringDecision {
   if (plant.status === 'completed') {
     return { outcome: 'already-completed' };
   }
@@ -106,5 +120,8 @@ export function cycleProgressMessage(plant: Plant): string {
 }
 
 export function streakProgressMessage(streak: number): string {
-  return `${Math.max(0, Math.min(streak, DAYS_TO_COMPLETE_PLANT))}/${DAYS_TO_COMPLETE_PLANT} uzastopnih dana`;
+  return `${Math.max(
+    0,
+    Math.min(streak, DAYS_TO_COMPLETE_PLANT),
+  )}/${DAYS_TO_COMPLETE_PLANT} uzastopnih dana`;
 }
