@@ -77,3 +77,8 @@ yarn-error.log
 
 /android-log.txt
 /growgratitude-crash-log.txt
+/growgratitude-ui-log.txt
+/adb
+
+# Local install packages and device screenshots
+/releases/

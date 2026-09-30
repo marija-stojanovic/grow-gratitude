@@ -1,21 +1,24 @@
-const mockFindById = jest.fn();
-const mockFindCompletionByDate = jest.fn();
-const mockAddCompletion = jest.fn();
-
 jest.mock('../src/repositories/challengeRepository', () => ({
   challengeRepository: {
-    findById: mockFindById,
-    findCompletionByDate: mockFindCompletionByDate,
-    addCompletion: mockAddCompletion,
+    findById: jest.fn(),
+    findCompletionByDate: jest.fn(),
+    addCompletion: jest.fn(),
   },
 }));
 
+import { challengeRepository } from '../src/repositories/challengeRepository';
 import {
   completeChallenge,
   selectRandomChallenge,
   SpinWheelError,
 } from '../src/services/spinWheelService';
 import type { Challenge } from '../src/types';
+
+const mockFindById = jest.mocked(challengeRepository.findById);
+const mockFindCompletionByDate = jest.mocked(
+  challengeRepository.findCompletionByDate,
+);
+const mockAddCompletion = jest.mocked(challengeRepository.addCompletion);
 
 const challenges: Challenge[] = [
   {

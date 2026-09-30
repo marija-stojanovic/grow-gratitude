@@ -1,15 +1,16 @@
-const mockFindByDate = jest.fn();
-const mockSave = jest.fn();
-
 jest.mock('../src/repositories/moodRepository', () => ({
   moodRepository: {
-    findByDate: mockFindByDate,
-    save: mockSave,
+    findByDate: jest.fn(),
+    save: jest.fn(),
   },
 }));
 
+import { moodRepository } from '../src/repositories/moodRepository';
 import { saveDailyMood } from '../src/services/moodService';
 import { shouldOfferSpinWheel } from '../src/domain/moodRules';
+
+const mockFindByDate = jest.mocked(moodRepository.findByDate);
+const mockSave = jest.mocked(moodRepository.save);
 
 beforeEach(() => jest.clearAllMocks());
 

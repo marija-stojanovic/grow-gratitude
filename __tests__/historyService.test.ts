@@ -1,31 +1,31 @@
-const mockFindGratitudes = jest.fn();
-const mockFindMoods = jest.fn();
-const mockFindPlants = jest.fn();
-const mockFindChallenges = jest.fn();
-const mockFindCompletions = jest.fn();
-const mockFindThemes = jest.fn();
-
 jest.mock('../src/repositories/gratitudeRepository', () => ({
-  gratitudeRepository: { findAll: mockFindGratitudes },
-}));
-jest.mock('../src/repositories/moodRepository', () => ({
-  moodRepository: { findAll: mockFindMoods },
+  gratitudeRepository: { findAll: jest.fn() },
 }));
 jest.mock('../src/repositories/plantRepository', () => ({
-  plantRepository: { findAll: mockFindPlants },
+  plantRepository: { findAll: jest.fn() },
 }));
 jest.mock('../src/repositories/challengeRepository', () => ({
   challengeRepository: {
-    findAll: mockFindChallenges,
-    findAllCompletions: mockFindCompletions,
+    findAll: jest.fn(),
+    findAllCompletions: jest.fn(),
   },
 }));
 jest.mock('../src/repositories/themeRepository', () => ({
-  themeRepository: { findAll: mockFindThemes },
+  themeRepository: { findAll: jest.fn() },
 }));
 
+import { gratitudeRepository } from '../src/repositories/gratitudeRepository';
+import { plantRepository } from '../src/repositories/plantRepository';
+import { challengeRepository } from '../src/repositories/challengeRepository';
+import { themeRepository } from '../src/repositories/themeRepository';
 import { loadHistoryData } from '../src/services/historyService';
 import type { Plant } from '../src/types';
+
+const mockFindGratitudes = jest.mocked(gratitudeRepository.findAll);
+const mockFindPlants = jest.mocked(plantRepository.findAll);
+const mockFindChallenges = jest.mocked(challengeRepository.findAll);
+const mockFindCompletions = jest.mocked(challengeRepository.findAllCompletions);
+const mockFindThemes = jest.mocked(themeRepository.findAll);
 
 const growingPlant: Plant = {
   id: 'growing',
@@ -59,7 +59,6 @@ const newerCompleted: Plant = {
 beforeEach(() => {
   jest.clearAllMocks();
   mockFindGratitudes.mockResolvedValue([]);
-  mockFindMoods.mockResolvedValue([]);
   mockFindChallenges.mockResolvedValue([]);
   mockFindCompletions.mockResolvedValue([]);
   mockFindThemes.mockResolvedValue([]);
@@ -80,7 +79,6 @@ test('učitava sve kategorije istorije i izdvaja završene biljke', async () => 
     'completed-1',
   ]);
   expect(mockFindGratitudes).toHaveBeenCalledTimes(1);
-  expect(mockFindMoods).toHaveBeenCalledTimes(1);
   expect(mockFindChallenges).toHaveBeenCalledTimes(1);
   expect(mockFindCompletions).toHaveBeenCalledTimes(1);
   expect(mockFindThemes).toHaveBeenCalledTimes(1);

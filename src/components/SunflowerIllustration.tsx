@@ -40,11 +40,15 @@ export function SunflowerIllustration({
   witheredFromStage = null,
   watering = false,
   animationKey = 0,
+  compact = false,
+  mini = false,
 }: {
   stage: PlantGrowthStage;
   witheredFromStage?: PlantGrowthStage | null;
   watering?: boolean;
   animationKey?: number;
+  compact?: boolean;
+  mini?: boolean;
 }) {
   const appearance = useRef(new Animated.Value(1)).current;
   const grow = useRef(new Animated.Value(1)).current;
@@ -106,7 +110,13 @@ export function SunflowerIllustration({
   };
 
   return (
-    <View style={styles.frame}>
+    <View
+      style={[
+        styles.frame,
+        compact && styles.compactFrame,
+        mini && styles.miniFrame,
+      ]}
+    >
       <Animated.Image
         accessibilityLabel={
           stage === 'withered' ? 'Uvenuli suncokret' : 'Suncokret u fazi rasta'
@@ -135,6 +145,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     overflow: 'hidden',
   },
+  compactFrame: { height: 140 },
+  miniFrame: { height: 55 },
   image: { width: '100%', height: '100%' },
   drop: {
     position: 'absolute',

@@ -3,5 +3,8 @@ export * from './historyService';
 export * from './plantDeletionService';
 export * from './plantingService';
 export * from './moodService';
+export * from './notificationService';
 export * from './spinWheelService';
+export * from './settingsService';
+export * from './statisticsService';
 export * from './wateringService';

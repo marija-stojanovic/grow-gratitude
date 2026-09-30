@@ -17,6 +17,7 @@ import {
   renameCustomChallenge,
   setChallengeActive,
 } from '../services/challengeManagementService';
+import { openNotificationSettings } from '../services/notificationService';
 import { useTheme } from '../theme/ThemeProvider';
 import { radius, spacing, typography } from '../theme/tokens';
 import type { Challenge, ThemePreference } from '../types';
@@ -45,7 +46,19 @@ const options: {
 ];
 
 export function SettingsScreen() {
-  const { colors, preference, setPreference } = useTheme();
+  const {
+    colors,
+    preference,
+    settings,
+    settingsLoading,
+    settingsSaving,
+    settingsError,
+    setPreference,
+    updateSettings,
+    reloadSettings,
+  } = useTheme();
+  const [reminderTime, setReminderTime] = useState('20:00');
+  const [settingsFeedback, setSettingsFeedback] = useState<string | null>(null);
   const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [challengeTitle, setChallengeTitle] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -55,6 +68,7 @@ export function SettingsScreen() {
     null,
   );
   const [challengeError, setChallengeError] = useState<string | null>(null);
+  const [showChallengeEditor, setShowChallengeEditor] = useState(false);
 
   const loadChallenges = useCallback(async () => {
     setLoadingChallenges(true);
@@ -71,6 +85,37 @@ export function SettingsScreen() {
   useEffect(() => {
     loadChallenges();
   }, [loadChallenges]);
+
+  useEffect(() => {
+    setReminderTime(settings.notificationTime);
+  }, [settings.notificationTime]);
+
+  const saveTheme = async (value: ThemePreference) => {
+    setSettingsFeedback(null);
+    if (await setPreference(value)) {
+      setSettingsFeedback('Izgled aplikacije je sačuvan.');
+    }
+  };
+
+  const toggleReminders = async (enabled: boolean) => {
+    setSettingsFeedback(null);
+    if (await updateSettings({ notificationsEnabled: enabled })) {
+      setSettingsFeedback(
+        enabled
+          ? 'Dnevni podsjetnik je uključen.'
+          : 'Dnevni podsjetnik je isključen.',
+      );
+    }
+  };
+
+  const saveReminderTime = async () => {
+    setSettingsFeedback(null);
+    if (await updateSettings({ notificationTime: reminderTime.trim() })) {
+      setSettingsFeedback(
+        `Vrijeme podsjetnika je sačuvano: ${reminderTime.trim()}.`,
+      );
+    }
+  };
 
   const resetChallengeForm = () => {
     setChallengeTitle('');
@@ -188,6 +233,59 @@ export function SettingsScreen() {
       title="Postavke"
       description="Prilagodi svoj mali prostor zahvalnosti."
     >
+      {settingsLoading ? (
+        <Card tinted>
+          <View style={styles.settingsStatus}>
+            <ActivityIndicator color={colors.primary} />
+            <Copy muted>Učitavanje sačuvanih postavki…</Copy>
+          </View>
+        </Card>
+      ) : null}
+      {settingsError ? (
+        <Card>
+          <Text
+            accessibilityRole="alert"
+            style={[styles.message, { color: colors.accent }]}
+          >
+            {settingsError}
+          </Text>
+          <Button
+            disabled={settingsLoading || settingsSaving}
+            label={settingsLoading ? 'Učitavanje…' : 'Pokušaj ponovo'}
+            onPress={() => {
+              void reloadSettings();
+            }}
+          />
+          {settingsError.includes('nisu dozvoljena') ? (
+            <Pressable
+              accessibilityRole="button"
+              disabled={settingsSaving}
+              onPress={() => {
+                void openNotificationSettings();
+              }}
+              style={({ pressed }) => [
+                styles.secondaryAction,
+                {
+                  borderColor: colors.border,
+                  opacity: pressed ? 0.7 : 1,
+                },
+              ]}
+            >
+              <Text style={[styles.actionText, { color: colors.text }]}>
+                Otvori Android postavke obavještenja
+              </Text>
+            </Pressable>
+          ) : null}
+        </Card>
+      ) : null}
+      {settingsFeedback ? (
+        <Text
+          accessibilityRole="alert"
+          style={[styles.message, { color: colors.primary }]}
+        >
+          {settingsFeedback}
+        </Text>
+      ) : null}
       <Card>
         <Copy heading>Izgled aplikacije</Copy>
         <View
@@ -201,9 +299,15 @@ export function SettingsScreen() {
               <Pressable
                 key={option.value}
                 accessibilityRole="radio"
-                accessibilityState={{ checked: selected }}
+                accessibilityState={{
+                  checked: selected,
+                  disabled: settingsLoading || settingsSaving,
+                }}
                 accessibilityLabel={`${option.title}. ${option.description}`}
-                onPress={() => setPreference(option.value)}
+                disabled={settingsLoading || settingsSaving}
+                onPress={() => {
+                  void saveTheme(option.value);
+                }}
                 style={({ pressed }) => [
                   styles.option,
                   {
@@ -211,7 +315,12 @@ export function SettingsScreen() {
                       ? colors.surfaceAlt
                       : colors.surface,
                     borderColor: selected ? colors.primary : colors.border,
-                    opacity: pressed ? 0.75 : 1,
+                    opacity:
+                      settingsLoading || settingsSaving
+                        ? 0.55
+                        : pressed
+                        ? 0.75
+                        : 1,
                   },
                 ]}
               >
@@ -230,17 +339,78 @@ export function SettingsScreen() {
           })}
         </View>
         <Copy muted>
-          Izbor trenutno važi dok je aplikacija otvorena. Trajno čuvanje
-          postavki dodat ćemo uz lokalnu bazu.
+          Izbor se čuva na telefonu i ponovo primjenjuje pri narednom pokretanju
+          aplikacije.
         </Copy>
       </Card>
       <Card>
-        <Copy heading>Dnevni podsjetnik</Copy>
+        <View style={styles.settingHeader}>
+          <View style={styles.settingCopy}>
+            <Copy heading>Dnevni podsjetnik</Copy>
+            <Copy muted>
+              Odredi želiš li svakodnevni podsjetnik za zahvalnost.
+            </Copy>
+          </View>
+          <Switch
+            accessibilityLabel="Dnevni podsjetnik"
+            disabled={settingsLoading || settingsSaving}
+            onValueChange={value => {
+              void toggleReminders(value);
+            }}
+            thumbColor={
+              settings.notificationsEnabled ? colors.primary : colors.muted
+            }
+            trackColor={{ false: colors.border, true: colors.accentSurface }}
+            value={settings.notificationsEnabled}
+          />
+        </View>
+        <Copy heading>Vrijeme podsjetnika</Copy>
         <Copy muted>
-          Ovdje ćeš moći uključiti podsjetnik i izabrati vrijeme koje ti
-          odgovara.
+          Unesi vrijeme u obliku sati i minuta. Početna vrijednost je 20:00.
         </Copy>
-        <Badge>U pripremi</Badge>
+        <View style={styles.reminderForm}>
+          <TextInput
+            accessibilityLabel="Vrijeme dnevnog podsjetnika"
+            autoCorrect={false}
+            editable={!settingsLoading && !settingsSaving}
+            maxLength={5}
+            onChangeText={setReminderTime}
+            placeholder="20:00"
+            placeholderTextColor={colors.muted}
+            selectTextOnFocus
+            style={[
+              styles.timeInput,
+              {
+                backgroundColor: colors.surface,
+                borderColor: colors.border,
+                color: colors.text,
+              },
+            ]}
+            value={reminderTime}
+          />
+          <Button
+            disabled={settingsLoading || settingsSaving || !reminderTime.trim()}
+            label={settingsSaving ? 'Čuvanje…' : 'Sačuvaj vrijeme'}
+            onPress={() => {
+              void saveReminderTime();
+            }}
+          />
+        </View>
+        <Copy muted>
+          Trenutno sačuvano vrijeme: {settings.notificationTime}
+        </Copy>
+        <Copy muted>
+          Kada je prekidač uključen, Android će svakog dana prikazati stvarno
+          GrowGratitude obavještenje u izabrano vrijeme.
+        </Copy>
+      </Card>
+      <Card>
+        <Copy heading>Jezik aplikacije</Copy>
+        <Badge>Srpski · latinica · ijekavica</Badge>
+        <Copy muted>
+          Oznaka jezika koja se čuva u bazi je {settings.language}. Ovo je jezik
+          prve verzije aplikacije.
+        </Copy>
       </Card>
       <Card>
         <Copy heading>Tvoji izazovi</Copy>
@@ -249,8 +419,21 @@ export function SettingsScreen() {
           isključiti, a svoje možeš i uređivati ili brisati.
         </Copy>
         <Badge>{`${activeCount} aktivnih · ${challenges.length} ukupno`}</Badge>
+        <Button
+          label={showChallengeEditor ? 'Zatvori uređivanje' : 'Uredi'}
+          onPress={() => {
+            setShowChallengeEditor(value => !value);
+            if (showChallengeEditor) {
+              resetChallengeForm();
+              setChallengeFeedback(null);
+              setChallengeError(null);
+            }
+          }}
+        />
 
-        <View style={styles.challengeForm}>
+        {showChallengeEditor ? (
+          <>
+          <View style={styles.challengeForm}>
           <Copy heading>
             {editingId ? 'Uredi svoj izazov' : 'Dodaj svoj izazov'}
           </Copy>
@@ -418,6 +601,8 @@ export function SettingsScreen() {
             ))}
           </View>
         )}
+          </>
+        ) : null}
       </Card>
       <Card tinted>
         <Copy heading>GrowGratitude</Copy>
@@ -430,6 +615,12 @@ export function SettingsScreen() {
   );
 }
 const styles = StyleSheet.create({
+  settingsStatus: {
+    minHeight: 52,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
   options: { gap: spacing.sm },
   option: {
     minHeight: 64,
@@ -442,6 +633,27 @@ const styles = StyleSheet.create({
   },
   optionText: { flex: 1 },
   check: { fontSize: 24 },
+  settingHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+  },
+  settingCopy: { flex: 1, gap: spacing.xs },
+  reminderForm: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  timeInput: {
+    width: 92,
+    minHeight: 52,
+    borderWidth: 1,
+    borderRadius: radius.sm,
+    paddingHorizontal: spacing.md,
+    textAlign: 'center',
+    fontSize: typography.body,
+    fontWeight: '600',
+  },
   challengeForm: {
     gap: spacing.sm,
     paddingVertical: spacing.sm,

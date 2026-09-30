@@ -1,6 +1,5 @@
 import { challengeRepository } from '../repositories/challengeRepository';
 import { gratitudeRepository } from '../repositories/gratitudeRepository';
-import { moodRepository } from '../repositories/moodRepository';
 import { plantRepository } from '../repositories/plantRepository';
 import { themeRepository } from '../repositories/themeRepository';
 import type {
@@ -8,13 +7,11 @@ import type {
   ChallengeCompletion,
   GratitudeEntry,
   GratitudeTheme,
-  MoodEntry,
   Plant,
 } from '../types';
 
 export interface HistoryData {
   gratitudes: GratitudeEntry[];
-  moods: MoodEntry[];
   completedPlants: Plant[];
   allPlants: Plant[];
   challenges: Challenge[];
@@ -26,14 +23,12 @@ export interface HistoryData {
 export async function loadHistoryData(): Promise<HistoryData> {
   const [
     gratitudes,
-    moods,
     allPlants,
     challenges,
     challengeCompletions,
     themes,
   ] = await Promise.all([
     gratitudeRepository.findAll(),
-    moodRepository.findAll(),
     plantRepository.findAll(),
     challengeRepository.findAll(),
     challengeRepository.findAllCompletions(),
@@ -48,7 +43,6 @@ export async function loadHistoryData(): Promise<HistoryData> {
 
   return {
     gratitudes,
-    moods,
     completedPlants,
     allPlants,
     challenges,

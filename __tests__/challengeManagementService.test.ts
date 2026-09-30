@@ -1,23 +1,16 @@
-const mockFindById = jest.fn();
-const mockFindByTitle = jest.fn();
-const mockFindAll = jest.fn();
-const mockCreate = jest.fn();
-const mockUpdateCustom = jest.fn();
-const mockSetActive = jest.fn();
-const mockDeleteCustom = jest.fn();
-
 jest.mock('../src/repositories/challengeRepository', () => ({
   challengeRepository: {
-    findById: mockFindById,
-    findByTitle: mockFindByTitle,
-    findAll: mockFindAll,
-    create: mockCreate,
-    updateCustom: mockUpdateCustom,
-    setActive: mockSetActive,
-    deleteCustom: mockDeleteCustom,
+    findById: jest.fn(),
+    findByTitle: jest.fn(),
+    findAll: jest.fn(),
+    create: jest.fn(),
+    updateCustom: jest.fn(),
+    setActive: jest.fn(),
+    deleteCustom: jest.fn(),
   },
 }));
 
+import { challengeRepository } from '../src/repositories/challengeRepository';
 import {
   ChallengeManagementError,
   createCustomChallenge,
@@ -26,6 +19,14 @@ import {
   setChallengeActive,
 } from '../src/services/challengeManagementService';
 import type { Challenge } from '../src/types';
+
+const mockFindById = jest.mocked(challengeRepository.findById);
+const mockFindByTitle = jest.mocked(challengeRepository.findByTitle);
+const mockFindAll = jest.mocked(challengeRepository.findAll);
+const mockCreate = jest.mocked(challengeRepository.create);
+const mockUpdateCustom = jest.mocked(challengeRepository.updateCustom);
+const mockSetActive = jest.mocked(challengeRepository.setActive);
+const mockDeleteCustom = jest.mocked(challengeRepository.deleteCustom);
 
 const builtIn: Challenge = {
   id: 'built-in',

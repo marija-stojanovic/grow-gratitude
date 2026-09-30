@@ -7,6 +7,7 @@ import {
   Text,
   View,
 } from 'react-native';
+import { ChallengeWheel } from '../components/ChallengeWheel';
 import { Badge, Button, Card, Copy, Screen } from '../components/UI';
 import { localDateFor } from '../domain';
 import { challengeRepository } from '../repositories/challengeRepository';
@@ -15,12 +16,13 @@ import {
   selectRandomChallenge,
 } from '../services/spinWheelService';
 import { useTheme } from '../theme/ThemeProvider';
-import { radius, spacing, typography } from '../theme/tokens';
+import { spacing, typography } from '../theme/tokens';
 import type { Challenge } from '../types';
 
 export function SpinWheelScreen() {
   const { colors } = useTheme();
   const rotation = useRef(new Animated.Value(0)).current;
+  const [targetRotation, setTargetRotation] = useState(1440);
   const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [selectedChallenge, setSelectedChallenge] = useState<Challenge | null>(
     null,
@@ -57,22 +59,32 @@ export function SpinWheelScreen() {
     if (spinning || challenges.length === 0) {
       return;
     }
+    const chosenChallenge = selectRandomChallenge(challenges);
+    const chosenIndex = challenges.findIndex(
+      challenge => challenge.id === chosenChallenge.id,
+    );
+    const sliceAngle = 360 / challenges.length;
+    const chosenMiddle = chosenIndex * sliceAngle + sliceAngle / 2;
+    const alignment = (90 - chosenMiddle + 360) % 360;
+    setTargetRotation(1440 + alignment);
     setSpinning(true);
     setSelectedChallenge(null);
     setCompleted(false);
     setFeedback(null);
     setError(null);
     rotation.setValue(0);
-    Animated.timing(rotation, {
-      toValue: 1,
-      duration: 1400,
-      easing: Easing.out(Easing.cubic),
-      useNativeDriver: true,
-    }).start(({ finished }) => {
-      if (finished) {
-        setSelectedChallenge(selectRandomChallenge(challenges));
-      }
-      setSpinning(false);
+    requestAnimationFrame(() => {
+      Animated.timing(rotation, {
+        toValue: 1,
+        duration: 1800,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+      }).start(({ finished }) => {
+        if (finished) {
+          setSelectedChallenge(chosenChallenge);
+        }
+        setSpinning(false);
+      });
     });
   };
 
@@ -108,7 +120,7 @@ export function SpinWheelScreen() {
 
   const wheelRotation = rotation.interpolate({
     inputRange: [0, 1],
-    outputRange: ['0deg', '1440deg'],
+    outputRange: ['0deg', `${targetRotation}deg`],
   });
 
   return (
@@ -127,24 +139,13 @@ export function SpinWheelScreen() {
           <>
             <View style={styles.wheelArea}>
               <View
-                style={[styles.pointer, { borderTopColor: colors.accent }]}
+                style={[styles.pointer, { borderRightColor: colors.accent }]}
               />
               <Animated.View
                 accessibilityLabel="Spin Wheel"
-                style={[
-                  styles.wheel,
-                  {
-                    backgroundColor: colors.surfaceAlt,
-                    borderColor: colors.primary,
-                    transform: [{ rotate: wheelRotation }],
-                  },
-                ]}
+                style={[styles.wheel, { transform: [{ rotate: wheelRotation }] }]}
               >
-                <Text style={styles.wheelSymbol}>✦</Text>
-                <Text style={[styles.wheelText, { color: colors.primary }]}>
-                  {spinning ? '...' : challenges.length}
-                </Text>
-                <Copy muted>aktivnih izazova</Copy>
+                <ChallengeWheel challenges={challenges} />
               </Animated.View>
             </View>
             <Button
@@ -234,32 +235,29 @@ const styles = StyleSheet.create({
     gap: spacing.md,
   },
   wheelArea: {
-    minHeight: 250,
+    minHeight: 320,
     alignItems: 'center',
     justifyContent: 'center',
   },
   pointer: {
+    position: 'absolute',
+    right: -2,
+    top: '46%',
     width: 0,
     height: 0,
-    borderLeftWidth: 14,
-    borderRightWidth: 14,
-    borderTopWidth: 24,
-    borderLeftColor: 'transparent',
-    borderRightColor: 'transparent',
-    marginBottom: -8,
-    zIndex: 1,
+    borderTopWidth: 15,
+    borderBottomWidth: 15,
+    borderRightWidth: 28,
+    borderTopColor: 'transparent',
+    borderBottomColor: 'transparent',
+    zIndex: 2,
   },
   wheel: {
-    width: 220,
-    height: 220,
-    borderRadius: 110,
-    borderWidth: 8,
+    width: 300,
+    height: 300,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: spacing.lg,
   },
-  wheelSymbol: { fontSize: 42 },
-  wheelText: { fontSize: typography.hero, fontWeight: '700' },
   message: { fontSize: typography.body, fontWeight: '600', lineHeight: 24 },
   challengeList: { gap: spacing.sm },
   challengeRow: {

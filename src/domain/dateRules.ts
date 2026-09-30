@@ -1,6 +1,16 @@
-import { LocalDate } from '../types';
+import type { LocalDate, LocalTime } from '../types';
 
 const LOCAL_DATE_PATTERN = /^(\d{4})-(\d{2})-(\d{2})$/;
+
+export function isLocalTime(value: string): value is LocalTime {
+  const match = /^(\d{2}):(\d{2})$/.exec(value);
+  if (!match) {
+    return false;
+  }
+  const hours = Number(match[1]);
+  const minutes = Number(match[2]);
+  return hours >= 0 && hours <= 23 && minutes >= 0 && minutes <= 59;
+}
 
 /** Datum prema kalendaru telefona, bez UTC pomjeranja preko ponoći. */
 export function localDateFor(date: Date): LocalDate {
