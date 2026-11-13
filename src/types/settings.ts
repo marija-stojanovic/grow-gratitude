@@ -2,7 +2,7 @@ import { EntityId } from './common';
 
 /** Lokalno vrijeme u obliku HH:mm. */
 export type LocalTime = string;
-export type ThemePreference = 'system' | 'light' | 'dark';
+export type ThemePreference = 'light' | 'dark';
 
 export interface AppSettings {
   themePreference: ThemePreference;

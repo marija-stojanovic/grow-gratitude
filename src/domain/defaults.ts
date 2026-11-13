@@ -1,7 +1,7 @@
 import { AppSettings } from '../types';
 
 export const DEFAULT_APP_SETTINGS: AppSettings = {
-  themePreference: 'system',
+  themePreference: 'light',
   notificationsEnabled: false,
   notificationTime: '20:00',
   onboardingCompleted: false,

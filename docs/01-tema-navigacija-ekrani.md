@@ -10,7 +10,7 @@ App.tsx → SafeAreaProvider → ThemeProvider → AppNavigator → odabrani ekr
 
 - `App.tsx` sastavlja aplikaciju. SafeAreaProvider daje podatke o prostoru koji zauzimaju sistemske trake i izrezi ekrana.
 - `src/theme/tokens.ts` sadrži palete boja, razmake, veličine teksta i zaobljenja. Nazivi poput `surface` i `text` opisuju namjenu boje. To omogućava da isti ekran radi u obje teme.
-- `src/theme/ThemeProvider.tsx` čuva izbor sistemska/svijetla/tamna pomoću React stanja. Context dijeli trenutnu paletu sa svim ekranima. `useTheme()` je način da komponenta pročita temu. Sistemska opcija koristi `useColorScheme()` iz React Nativea. Izbor nije trajno sačuvan: nakon potpunog ponovnog pokretanja vraća se na sistemsku temu.
+- `src/theme/ThemeProvider.tsx` dijeli izabranu svijetlu ili tamnu paletu sa svim ekranima. `useTheme()` je način da komponenta pročita temu. Svijetla tema je početna, a izbor se trajno čuva u SQLite postavkama.
 - `src/navigation/AppNavigator.tsx` čuva aktivnu karticu i prikazuje odgovarajući ekran. Ovo je jednostavna vlastita navigacija preko React stanja, bez nove biblioteke. Android Back vraća na Danas, a sa Danas prepušta povratak Android sistemu. Promjena kartice ponovo otvara njen ekran od vrha. Sadržaj forme i istorija detaljnih ruta još ne postoje. Pri dodavanju formi uvest ćemo navigaciju koja podržava njihove tokove i zaštitu nespremljenog teksta.
 - Datum se osvježava jednom u minuti i pri povratku u aplikaciju. Timer i pretplate uklanjaju se kada se navigator ukloni.
 - `src/components/UI.tsx` sadrži Screen, Copy, Card, Button, Badge i EmptyState. Time se zajednički stilovi ne kopiraju na svakom ekranu.

@@ -149,7 +149,8 @@ export const mapChallengeCompletionRow = (
 });
 
 export const mapAppSettingsRow = (row: AppSettingsRow): AppSettings => ({
-  themePreference: row.theme_preference,
+  themePreference:
+    row.theme_preference === 'dark' ? 'dark' : 'light',
   notificationsEnabled: toBoolean(row.notifications_enabled),
   notificationTime: row.notification_time,
   onboardingCompleted: toBoolean(row.onboarding_completed),

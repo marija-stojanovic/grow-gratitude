@@ -1,6 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import {
-  Animated,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -16,6 +15,7 @@ import type { GratitudeTheme, PlantGrowthStage } from '../../types';
 import { useTheme } from '../../theme/ThemeProvider';
 import { radius, spacing, typography } from '../../theme/tokens';
 import { SunflowerIllustration } from '../SunflowerIllustration';
+import { CompletionConfetti } from '../CompletionConfetti';
 import { Badge, Copy } from '../UI';
 
 const stageStarts = [0, 1, 5, 9, 13, 17, 21] as const;
@@ -200,69 +200,6 @@ export function TestGardenSector({
   );
 }
 
-const confettiColors = ['#F1C75B', '#78AD68', '#E8866B', '#8AA8E8', '#D98AB7'];
-
-function CompletionConfetti() {
-  const progress = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    const animation = Animated.timing(progress, {
-      toValue: 1,
-      duration: 2200,
-      useNativeDriver: true,
-    });
-    animation.start();
-    return () => animation.stop();
-  }, [progress]);
-
-  return (
-    <View pointerEvents="none" style={styles.confettiLayer}>
-      {Array.from({ length: 24 }, (_, index) => {
-        const column = index % 8;
-        const row = Math.floor(index / 8);
-        const drift = (column - 3.5) * (8 + row * 2);
-        return (
-          <Animated.View
-            key={index}
-            style={[
-              styles.confetti,
-              {
-                left: `${8 + column * 12}%`,
-                top: -12 - row * 18,
-                backgroundColor: confettiColors[index % confettiColors.length],
-                opacity: progress.interpolate({
-                  inputRange: [0, 0.12, 0.82, 1],
-                  outputRange: [0, 1, 1, 0],
-                }),
-                transform: [
-                  {
-                    translateY: progress.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [0, 275 + row * 20],
-                    }),
-                  },
-                  {
-                    translateX: progress.interpolate({
-                      inputRange: [0, 0.5, 1],
-                      outputRange: [0, drift, -drift / 2],
-                    }),
-                  },
-                  {
-                    rotate: progress.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: ['0deg', `${360 + index * 24}deg`],
-                    }),
-                  },
-                ],
-              },
-            ]}
-          />
-        );
-      })}
-    </View>
-  );
-}
-
 function TestButton({
   label,
   disabled = false,
@@ -298,20 +235,6 @@ function TestButton({
 const styles = StyleSheet.create({
   root: { flex: 1, gap: spacing.md, paddingBottom: spacing.lg },
   illustrationArea: { position: 'relative', overflow: 'hidden' },
-  confettiLayer: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    bottom: 0,
-    left: 0,
-    zIndex: 2,
-  },
-  confetti: {
-    position: 'absolute',
-    width: 9,
-    height: 15,
-    borderRadius: 2,
-  },
   sectorChoice: { gap: spacing.sm },
   sectorList: { gap: spacing.sm, paddingRight: spacing.lg },
   sectorButton: {

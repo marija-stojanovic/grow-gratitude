@@ -27,7 +27,7 @@ import {
 } from '../services/plantingService';
 import { saveGratitudeAndWaterPlant } from '../services/wateringService';
 import { useTheme } from '../theme/ThemeProvider';
-import { typography } from '../theme/tokens';
+import { radius, spacing, typography } from '../theme/tokens';
 import type { GratitudeEntry, GratitudeTheme, Plant } from '../types';
 
 function activePlantFor(plants: Plant[], themeId: string): Plant | undefined {
@@ -61,6 +61,10 @@ export function GardenScreen() {
   >({});
   const [feedback, setFeedback] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [plantAnimationKey, setPlantAnimationKey] = useState(0);
+  const [celebratingPlantId, setCelebratingPlantId] = useState<string | null>(
+    null,
+  );
   const today = localDateFor(new Date());
 
   const loadGarden = useCallback(async () => {
@@ -162,24 +166,36 @@ export function GardenScreen() {
         entryDate: today,
         createdAt: new Date().toISOString(),
       });
+      await new Promise<void>(resolve => setTimeout(resolve, 850));
       setGratitudeDrafts(current => ({ ...current, [plant.id]: '' }));
-      await loadGarden();
+      setPlantAnimationKey(value => value + 1);
       if (result.completedNow && result.offerNextCycle) {
-        setFeedback(`Uspješno ste završili ${plant.cycleNumber}. ciklus.`);
-        Alert.alert(
-          'Biljka je potpuno odrasla',
-          `Želite li započeti uzgajanje nove biljke za temu ${theme.name}?`,
-          [
-            { text: 'Ne sada', style: 'cancel' },
-            {
-              text: 'Započni novu biljku',
-              onPress: () => plantNewCycle(theme, plant.name),
-            },
-          ],
+        setPlants(current =>
+          current.map(item => (item.id === result.plant.id ? result.plant : item)),
         );
+        setFeedback(`Uspješno ste završili ${plant.cycleNumber}. ciklus.`);
+        setCelebratingPlantId(plant.id);
+        setTimeout(() => {
+          setCelebratingPlantId(null);
+          loadGarden().then(() => {
+            Alert.alert(
+              'Biljka je potpuno odrasla',
+              `Želite li započeti uzgajanje nove biljke za temu ${theme.name}?`,
+              [
+                { text: 'Ne sada', style: 'cancel' },
+                {
+                  text: 'Započni novu biljku',
+                  onPress: () => plantNewCycle(theme, plant.name),
+                },
+              ],
+            );
+          });
+        }, 2200);
       } else if (result.restartedAfterMiss) {
+        await loadGarden();
         setFeedback(`${plant.name}: novi niz je počeo od 1/21.`);
       } else {
+        await loadGarden();
         setFeedback(`${plant.name}: zahvalnost je sačuvana.`);
       }
     } catch (caughtError) {
@@ -267,7 +283,12 @@ export function GardenScreen() {
   const selectedGardenTheme =
     themes.find(theme => theme.id === selectedGardenThemeId) ?? null;
   const selectedGardenActivePlant = selectedGardenTheme
-    ? activePlantFor(plants, selectedGardenTheme.id)
+    ? activePlantFor(plants, selectedGardenTheme.id) ??
+      plants.find(
+        plant =>
+          plant.id === celebratingPlantId &&
+          plant.themeId === selectedGardenTheme.id,
+      )
     : undefined;
 
   if (selectedPlant && selectedTheme) {
@@ -351,10 +372,23 @@ export function GardenScreen() {
         title={selectedGardenTheme.isAutomatic ? 'Danas' : selectedGardenTheme.name}
         description={selectedGardenTheme.description}
       >
-        <Button
-          label="← Nazad na poljanu"
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Nazad na poljanu"
           onPress={() => setSelectedGardenThemeId(null)}
-        />
+          style={({ pressed }) => [
+            styles.fieldBack,
+            {
+              backgroundColor: colors.surfaceAlt,
+              borderColor: colors.border,
+              opacity: pressed ? 0.7 : 1,
+            },
+          ]}
+        >
+          <Text style={[styles.fieldBackText, { color: colors.primary }]}>
+            ← Poljana
+          </Text>
+        </Pressable>
         {feedback ? (
           <Text
             accessibilityRole="alert"
@@ -392,6 +426,8 @@ export function GardenScreen() {
             }))
           }
           onWater={waterPlant}
+          animationKey={plantAnimationKey}
+          celebrating={celebratingPlantId === selectedGardenActivePlant?.id}
           onAddPlant={() => {
             setSelectedPlantingTheme(selectedGardenTheme);
             setNewPlantName(selectedGardenTheme.name);
@@ -508,4 +544,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
   },
   demoBackText: { fontSize: 13, fontWeight: '700' },
+  fieldBack: {
+    minHeight: 38,
+    alignSelf: 'flex-start',
+    borderWidth: 1,
+    borderRadius: radius.sm,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: spacing.md,
+  },
+  fieldBackText: { fontSize: typography.small, fontWeight: '700' },
 });

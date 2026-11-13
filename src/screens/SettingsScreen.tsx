@@ -26,22 +26,14 @@ import { version } from '../../package.json';
 const options: {
   value: ThemePreference;
   title: string;
-  description: string;
 }[] = [
-  {
-    value: 'system',
-    title: 'Sistemska',
-    description: 'Prati izgled tvog uređaja.',
-  },
   {
     value: 'light',
     title: 'Svijetla',
-    description: 'Svijetle površine i nježne zelene boje.',
   },
   {
     value: 'dark',
     title: 'Tamna',
-    description: 'Tamnije površine za ugodan pregled.',
   },
 ];
 
@@ -303,7 +295,7 @@ export function SettingsScreen() {
                   checked: selected,
                   disabled: settingsLoading || settingsSaving,
                 }}
-                accessibilityLabel={`${option.title}. ${option.description}`}
+                accessibilityLabel={`${option.title} tema`}
                 disabled={settingsLoading || settingsSaving}
                 onPress={() => {
                   void saveTheme(option.value);
@@ -326,7 +318,6 @@ export function SettingsScreen() {
               >
                 <View style={styles.optionText}>
                   <Copy heading>{option.title}</Copy>
-                  <Copy muted>{option.description}</Copy>
                 </View>
                 <Text
                   importantForAccessibility="no"
@@ -338,10 +329,6 @@ export function SettingsScreen() {
             );
           })}
         </View>
-        <Copy muted>
-          Izbor se čuva na telefonu i ponovo primjenjuje pri narednom pokretanju
-          aplikacije.
-        </Copy>
       </Card>
       <Card>
         <View style={styles.settingHeader}>
@@ -365,9 +352,6 @@ export function SettingsScreen() {
           />
         </View>
         <Copy heading>Vrijeme podsjetnika</Copy>
-        <Copy muted>
-          Unesi vrijeme u obliku sati i minuta. Početna vrijednost je 20:00.
-        </Copy>
         <View style={styles.reminderForm}>
           <TextInput
             accessibilityLabel="Vrijeme dnevnog podsjetnika"
@@ -399,18 +383,10 @@ export function SettingsScreen() {
         <Copy muted>
           Trenutno sačuvano vrijeme: {settings.notificationTime}
         </Copy>
-        <Copy muted>
-          Kada je prekidač uključen, Android će svakog dana prikazati stvarno
-          GrowGratitude obavještenje u izabrano vrijeme.
-        </Copy>
       </Card>
       <Card>
         <Copy heading>Jezik aplikacije</Copy>
         <Badge>Srpski · latinica · ijekavica</Badge>
-        <Copy muted>
-          Oznaka jezika koja se čuva u bazi je {settings.language}. Ovo je jezik
-          prve verzije aplikacije.
-        </Copy>
       </Card>
       <Card>
         <Copy heading>Tvoji izazovi</Copy>
@@ -606,10 +582,7 @@ export function SettingsScreen() {
       </Card>
       <Card tinted>
         <Copy heading>GrowGratitude</Copy>
-        <Copy muted>Verzija {version} · Početna razvojna verzija</Copy>
-        <Copy muted>
-          Mali dnevni ritual zahvalnosti, uz baštu koja raste s tobom.
-        </Copy>
+        <Copy muted>Verzija {version}</Copy>
       </Card>
     </Screen>
   );

@@ -20,7 +20,7 @@ export class SettingsError extends Error {
 }
 
 function isThemePreference(value: string): value is ThemePreference {
-  return value === 'system' || value === 'light' || value === 'dark';
+  return value === 'light' || value === 'dark';
 }
 
 export async function loadAppSettings(): Promise<AppSettings> {

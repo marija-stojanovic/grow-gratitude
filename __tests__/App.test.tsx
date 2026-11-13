@@ -8,7 +8,7 @@ import App from '../App';
 
 jest.mock('../src/services/settingsService', () => ({
   loadAppSettings: jest.fn().mockResolvedValue({
-    themePreference: 'system',
+    themePreference: 'light',
     notificationsEnabled: false,
     notificationTime: '20:00',
     onboardingCompleted: false,

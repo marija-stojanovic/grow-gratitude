@@ -18,7 +18,7 @@ const mockGet = jest.mocked(settingsRepository.get);
 const mockSave = jest.mocked(settingsRepository.save);
 
 const savedSettings: AppSettings = {
-  themePreference: 'system',
+  themePreference: 'light',
   notificationsEnabled: false,
   notificationTime: '20:00',
   onboardingCompleted: true,

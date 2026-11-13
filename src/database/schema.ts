@@ -1,4 +1,4 @@
-export const SCHEMA_VERSION = 1;
+export const SCHEMA_VERSION = 2;
 
 export const CREATE_SCHEMA_V1 = [
   `CREATE TABLE IF NOT EXISTS themes (
@@ -81,8 +81,8 @@ export const CREATE_SCHEMA_V1 = [
     ON challenge_completions(completion_date DESC)`,
   `CREATE TABLE IF NOT EXISTS app_settings (
     id INTEGER PRIMARY KEY NOT NULL CHECK (id = 1),
-    theme_preference TEXT NOT NULL DEFAULT 'system'
-      CHECK (theme_preference IN ('system', 'light', 'dark')),
+    theme_preference TEXT NOT NULL DEFAULT 'light'
+      CHECK (theme_preference IN ('light', 'dark')),
     notifications_enabled INTEGER NOT NULL DEFAULT 0
       CHECK (notifications_enabled IN (0, 1)),
     notification_time TEXT NOT NULL DEFAULT '20:00'

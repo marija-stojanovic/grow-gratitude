@@ -149,10 +149,6 @@ export function StatisticsScreen() {
 
           <Card>
             <Copy heading>Posljednjih 7 dana</Copy>
-            <Copy muted>
-              Visina stubaca predstavlja nivo raspoloženja. Prazan dan nema
-              pretpostavljenu vrijednost.
-            </Copy>
             {statistics.weekSummary.recordedDays === 0 ? (
               <EmptyState
                 symbol="▥"
@@ -170,10 +166,6 @@ export function StatisticsScreen() {
 
           <Card>
             <Copy heading>Tekući mjesec</Copy>
-            <Copy muted>
-              Svako polje predstavlja jedan kalendarski dan. Budući dani su
-              prigušeni, a dani bez unosa ostaju prazni.
-            </Copy>
             {statistics.monthSummary.recordedDays === 0 ? (
               <EmptyState
                 symbol="□"

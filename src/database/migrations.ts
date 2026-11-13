@@ -116,10 +116,21 @@ async function migrateToVersionOne(
   });
 }
 
+async function migrateToVersionTwo(
+  database: NitroSQLiteConnection,
+): Promise<void> {
+  await database.transaction(async transaction => {
+    await transaction.executeAsync(
+      "UPDATE app_settings SET theme_preference = 'light' WHERE theme_preference = 'system'",
+    );
+    await transaction.executeAsync('PRAGMA user_version = 2');
+  });
+}
+
 export async function runMigrations(
   database: NitroSQLiteConnection,
 ): Promise<void> {
-  const currentVersion = await readSchemaVersion(database);
+  let currentVersion = await readSchemaVersion(database);
   if (currentVersion > SCHEMA_VERSION) {
     throw new Error(
       `Baza verzije ${currentVersion} novija je od podržane verzije ${SCHEMA_VERSION}.`,
@@ -127,5 +138,9 @@ export async function runMigrations(
   }
   if (currentVersion < 1) {
     await migrateToVersionOne(database);
+    currentVersion = 1;
+  }
+  if (currentVersion < 2) {
+    await migrateToVersionTwo(database);
   }
 }

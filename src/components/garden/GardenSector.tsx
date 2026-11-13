@@ -3,8 +3,13 @@ import { StyleSheet, View } from 'react-native';
 import { plantViewState } from '../../domain';
 import type { GratitudeTheme, Plant } from '../../types';
 import { spacing } from '../../theme/tokens';
+import { SunflowerIllustration } from '../SunflowerIllustration';
+import { CompletionConfetti } from '../CompletionConfetti';
 import { Badge, Button, Card, Copy } from '../UI';
-import { sortSectorPlants } from './gardenPresentation';
+import {
+  gardenPlantStatus,
+  sortSectorPlants,
+} from './gardenPresentation';
 import { PlantCard } from './PlantCard';
 import { WaterPlantForm } from './WaterPlantForm';
 
@@ -19,6 +24,8 @@ export function GardenSector({
   onChangeDraft,
   onWater,
   onAddPlant,
+  animationKey,
+  celebrating,
 }: {
   theme: GratitudeTheme;
   plants: Plant[];
@@ -30,8 +37,13 @@ export function GardenSector({
   onChangeDraft: (plantId: string, value: string) => void;
   onWater: (theme: GratitudeTheme, plant: Plant) => void;
   onAddPlant?: () => void;
+  animationKey: number;
+  celebrating: boolean;
 }) {
   const sectorPlants = sortSectorPlants(plants);
+  const previousPlants = activePlant
+    ? sectorPlants.filter(plant => plant.id !== activePlant.id)
+    : sectorPlants;
   const activeState = activePlant ? plantViewState(activePlant, today) : null;
   return (
     <Card>
@@ -43,20 +55,25 @@ export function GardenSector({
         <Badge>{`${sectorPlants.length} biljaka`}</Badge>
       </View>
 
-      {sectorPlants.length === 0 ? (
-        <Copy muted>U ovom sektoru još nema biljaka.</Copy>
-      ) : (
-        <View style={styles.plants}>
-          {sectorPlants.map(plant => (
-            <PlantCard
-              key={plant.id}
-              plant={plant}
-              today={today}
-              onOpen={() => onOpenPlant(plant.id)}
+      {activePlant && activeState ? (
+        <View style={styles.activePlant}>
+          <View style={styles.illustrationArea}>
+            <SunflowerIllustration
+              stage={activeState.stage}
+              witheredFromStage={activeState.witheredFromStage}
+              watering={busyId === activePlant.id}
+              animationKey={animationKey}
             />
-          ))}
+            {celebrating ? <CompletionConfetti /> : null}
+          </View>
+          <Copy heading>{activePlant.name}</Copy>
+          <View style={styles.badges}>
+            <Badge>{gardenPlantStatus(activePlant, today)}</Badge>
+            <Badge>{`${activePlant.cycleNumber}. ciklus`}</Badge>
+          </View>
+          <Copy muted>{`${activeState.streak}/21 uzastopnih dana`}</Copy>
         </View>
-      )}
+      ) : null}
 
       {activePlant && activeState ? (
         theme.isAutomatic ? (
@@ -80,6 +97,22 @@ export function GardenSector({
           ) : null}
         </>
       ) : null}
+
+      {previousPlants.length === 0 && !activePlant ? (
+        <Copy muted>U ovom sektoru još nema prethodnih biljaka.</Copy>
+      ) : previousPlants.length > 0 ? (
+        <View style={styles.plants}>
+          <Copy heading>Prethodne biljke</Copy>
+          {previousPlants.map(plant => (
+            <PlantCard
+              key={plant.id}
+              plant={plant}
+              today={today}
+              onOpen={() => onOpenPlant(plant.id)}
+            />
+          ))}
+        </View>
+      ) : null}
     </Card>
   );
 }
@@ -92,4 +125,16 @@ const styles = StyleSheet.create({
   },
   headingCopy: { flex: 1, gap: spacing.xs },
   plants: { gap: spacing.md },
+  activePlant: { alignItems: 'center', gap: spacing.sm },
+  illustrationArea: {
+    width: '100%',
+    position: 'relative',
+    overflow: 'hidden',
+  },
+  badges: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    gap: spacing.sm,
+  },
 });

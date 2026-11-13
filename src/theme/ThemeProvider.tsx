@@ -5,7 +5,6 @@ import React, {
   useEffect,
   useState,
 } from 'react';
-import { useColorScheme } from 'react-native';
 import { DEFAULT_APP_SETTINGS } from '../domain';
 import {
   loadAppSettings,
@@ -36,7 +35,6 @@ type ThemeContextValue = {
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const systemScheme = useColorScheme();
   const [settings, setSettings] = useState<AppSettings>(DEFAULT_APP_SETTINGS);
   const [settingsLoading, setSettingsLoading] = useState(true);
   const [settingsSaving, setSettingsSaving] = useState(false);
@@ -117,9 +115,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   );
 
   const preference = settings.themePreference;
-  const isDark =
-    preference === 'dark' ||
-    (preference === 'system' && systemScheme === 'dark');
+  const isDark = preference === 'dark';
 
   return (
     <ThemeContext.Provider
