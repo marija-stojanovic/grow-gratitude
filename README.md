@@ -1,18 +1,22 @@
 # GrowGratitude
 
-GrowGratitude is a mobile application designed to encourage gratitude, daily reflection, consistency, and mindful habit building through an interactive virtual garden.
+GrowGratitude is an Android gratitude journal where each daily entry waters a virtual plant. A 21-day streak grows a seed into a sunflower that stays in the garden.
 
-The application started as my personal idea for combining a simple gratitude practice with a visual representation of progress. Each gratitude entry waters a virtual plant, while consistent daily use allows the plant to grow from a seed into a fully developed sunflower. The goal is to make progress visible, meaningful, and pleasant without turning reflection into a complicated task.
+I designed and built GrowGratitude with React Native, TypeScript, and SQLite as the practical part of my bachelor's thesis on user experience and habit formation.
 
-GrowGratitude is intended as a supportive well-being tool. It is not a medical product and does not diagnose, prevent, or treat mental health conditions.
+## Screenshots
+
+| Daily gratitude | Completed cycle (demo mode) | Gratitude garden |
+| --- | --- | --- |
+| <img src="docs/screenshots/daily-journal.jpg" width="200" alt="Daily gratitude screen with a sprout at day 1 of 21"> | <img src="docs/screenshots/completed-cycle.jpg" width="200" alt="Demo mode showing a fully grown sunflower at day 21 of 21"> | <img src="docs/screenshots/garden.png" width="200" alt="Garden overview with plants grouped into gratitude themes"> |
+
+| Mood check-in | Spin Wheel | Mood statistics |
+| --- | --- | --- |
+| <img src="docs/screenshots/mood-check-in.jpg" width="200" alt="Daily mood selection with an optional challenge suggestion"> | <img src="docs/screenshots/spin-wheel.jpg" width="200" alt="Spin Wheel with 12 active challenges"> | <img src="docs/screenshots/mood-statistics.jpg" width="200" alt="Weekly mood chart and monthly mood calendar"> |
 
 ## Project status
 
-The current version is a functional Android application and includes the core experience, local persistence, notifications, statistics, tests, and a release build workflow. The application is still being developed and refined.
-
-GrowGratitude will also serve as the practical part of my bachelor's thesis, which is currently in progress. The research focuses on the relationship between mobile applications and mental well-being, as well as the influence of user interface and user experience on habit formation, habit maintenance, consistency, and long-term user engagement.
-
-Both the final application and the thesis are planned for completion no later than **March 2027**.
+The Android app already supports gratitude entries, plant growth, mood tracking, reminders, and challenges. Development is ongoing, with the app and thesis planned for completion by **March 2027**.
 
 ## Core concept
 
